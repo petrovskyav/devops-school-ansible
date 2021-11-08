@@ -17,12 +17,8 @@
 
   - name: Close http port
     firewalld:
-      zone: public
       port: 80/tcp
-      permanent: true
+      permanent: yes
       state: disabled
-
-  - name: Reload firewall
-    command: "firewall-cmd --reload"
-
+      immediate: true
 

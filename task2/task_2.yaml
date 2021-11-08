@@ -4,13 +4,13 @@
   become: yes
 
   vars_files:
-    - users.yaml
+    - vars/users.yaml
 
   tasks:
   - name: more complex items to add several users
     user:
-      name: "{{ item.name|lower }}"
-      password: "{{ item.password }}"
+      name: "{{ item.name }}"
+      password: "{{ item.password | password_hash('sha512') }}"
       comment: "{{ item.name|lower }}@{{ domain }}"
       home: "/home/{{ item.name|lower }}"
       update_password: on_create

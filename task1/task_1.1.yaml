@@ -23,15 +23,12 @@
         Welcome to my web server
     notify: Restart apache
 
-  - name: enable http port
+  - name: Add port to firewalld
     firewalld:
-      zone: public
       port: 80/tcp
-      permanent: true
+      permanent: yes
       state: enabled
-
-  - name: Reload firewall
-    shell: firewall-cmd --reload
+      immediate: true
 
   - name: Check if web server is running
     uri:
@@ -46,8 +43,6 @@
 
   - debug:
       var: result
-
-
 
   handlers:
   - name: Restart apache

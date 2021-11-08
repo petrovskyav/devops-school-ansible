@@ -1,11 +1,11 @@
 ---
-- name: Remove Apache web server
+- name: Modify the file via lineinfile module
   hosts: lab_servers
   become: yes
 
 
   vars:
-    file_name: /home/alex/grub
+    file_name: /etc/default/grub
     params:
       - net.ifnames=0
       - biosdevname=0
