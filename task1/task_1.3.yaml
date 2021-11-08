@@ -1,0 +1,24 @@
+---
+- name: Remove Apache web server
+  hosts: lab_servers
+  become: yes
+
+
+  vars:
+    file_name: /home/alex/grub
+    params:
+      - net.ifnames=0
+      - biosdevname=0
+
+
+  tasks:
+  - name: Add params to the core loading string
+    lineinfile: >
+      regexp='^GRUB_CMDLINE_LINUX=\"(.*(?<!ARGS))\"'
+      line='GRUB_CMDLINE_LINUX="\1 {{params | join(''' ''')}}"'
+      dest=/home/alex/grub
+      backrefs=true
+      state=present
+
+  - name: grub2-mkconfig
+    shell: grub2-mkconfig

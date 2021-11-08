@@ -1,0 +1,28 @@
+---
+- name: Remove Apache web server
+  hosts: lab_servers
+  become: yes
+
+  tasks:
+  - name: Remove apache web server
+    yum:
+      name: httpd
+      state: absent
+
+
+  - name: Remove the file
+    file:
+      path: "/var/www/html/index.html"
+      state: absent
+
+  - name: Close http port
+    firewalld:
+      zone: public
+      port: 80/tcp
+      permanent: true
+      state: disabled
+
+  - name: Reload firewall
+    command: "firewall-cmd --reload"
+
+

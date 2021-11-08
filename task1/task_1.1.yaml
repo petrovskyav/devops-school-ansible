@@ -1,0 +1,56 @@
+---
+- name: install default Apache web server
+  hosts: lab_servers
+  become: yes
+
+  tasks:
+
+  - name: Install apache web server
+    yum:
+      name: httpd
+      state: installed
+
+  - name: Start apache and enable it
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: Creating a file with content
+    copy:
+      dest: "/var/www/html/index.html"
+      content: |
+        Welcome to my web server
+    notify: Restart apache
+
+  - name: enable http port
+    firewalld:
+      zone: public
+      port: 80/tcp
+      permanent: true
+      state: enabled
+
+  - name: Reload firewall
+    shell: firewall-cmd --reload
+
+  - name: Check if web server is running
+    uri:
+      url: "http://{{ansible_ssh_host}}"
+      method: GET
+      status_code: [200, 403]
+    register: result
+    until: result.status == 200
+    retries: 5
+    delay: 1
+    delegate_to: 127.0.0.1
+
+  - debug:
+      var: result
+
+
+
+  handlers:
+  - name: Restart apache
+    service:
+      name: httpd
+      state: restarted
