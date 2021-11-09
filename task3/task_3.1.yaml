@@ -1,0 +1,6 @@
+---
+- name: install default Apache web server with the role
+  hosts: lab_servers
+  become: yes
+  roles:
+  - {role: deploy_apache, when ansible_os_family == "RedHat"}

@@ -1,0 +1,14 @@
+---
+# vars file for deploy_ftp
+ftp_ports:
+- 20/tcp
+- 21/tcp
+
+
+ftp_anon_root: /var/ftp/pub
+ftp_anon_upload_dir: "{{ ftp_anon_root }}/upload"
+
+anonymous_enable: "YES"
+anon_upload_enable: "YES"
+local_enable: "YES"
+write_enable: "YES"

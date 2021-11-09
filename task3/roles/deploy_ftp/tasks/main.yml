@@ -1,0 +1,76 @@
+---
+- name: install vsftpd
+  yum:
+    name: vsftpd
+    state: installed
+
+- name: Start vsftpd and enable it
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
+
+- name: Add service ftp to firewalld
+  firewalld:
+    zone: public
+    service: ftp
+    permanent: yes
+    state: enabled
+    immediate: true
+  notify: Restart vsftpd
+
+- name: Add port 21 to firewalld
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: true
+  loop: "{{ ftp_ports }}"
+  notify: Restart vsftpd
+
+- name: Creates anon root directory
+  file:
+    path: "{{ ftp_anon_root }}"
+    state: directory
+    owner: root
+#    group: ftp
+    mode: 0755
+
+- name: Creates anon upload directory
+  file:
+    path: "{{ ftp_anon_upload_dir }}"
+    state: directory
+    owner: ftp
+#    group: ftp
+    mode: 0755
+
+- name: Generate index.html file
+  template:
+    src:  vsftpd.j2 
+    dest: /etc/vsftpd/vsftpd.conf
+    mode: 0555
+  notify: Restart vsftpd
+
+
+- name: Allow full read/write access through SELinux
+  seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+
+- name: Allow public_content_t context to {{ ftp_anon_root }}
+  sefcontext:
+    target: "{{ ftp_anon_root }}"
+    setype: public_content_t
+    state: present
+
+- name: Allow public_content_t context to {{ ftp_anon_upload_dir }}
+  sefcontext:
+    target: "{{ ftp_anon_upload_dir }}"
+    setype: public_content_rw_t
+    state: present
+
+
+
+

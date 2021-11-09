@@ -1,0 +1,6 @@
+---
+- name: install FTP server with the role
+  hosts: lab_servers
+  become: yes
+  roles:
+  - {role: deploy_ftp, when ansible_os_family == "RedHat"}

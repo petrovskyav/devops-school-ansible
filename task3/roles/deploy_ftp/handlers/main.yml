@@ -1,0 +1,8 @@
+---
+- name: Restart vsftpd
+  service:
+    name: vsftpd
+    state: restarted
+
+- name: Backup default config
+  command: mv /var/ftp/vsftpd.conf /var/ftp/vsftpd.conf.default
